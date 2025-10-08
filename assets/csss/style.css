@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+body {
+    font-family: 'Outfit';
+    margin: 0;
+    padding: 0;
+    background-color: #78f7a2;
+}
+.app-container {
+    margin: 0 auto;
+    padding: 0;
+}
+.app-header {
+    background-color: #7dee9f;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    margin:0;
+}
+.navigation {
+    background-color: #a0fca8;
+    padding: 10px;
+    margin-bottom: 10x;
+    margin-top: 10px;
+    text-align: center;
+}
+.nav-link {
+     background-color: #a1f790;
+     padding: 2px 8px;
+     border-radius: 15px ;
+}
+.nav-link:hover {
+    background-color: rgb(147, 243, 160);
+}   
+a {
+    text-decoration: none;
+    color: black;   
+    font-weight: bold;
+    font-size: 18px;
+}
+.nav-links{
+    display: flex ;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+}
+.page-container {
+    padding: 20px;
+    background-color: #5bec62de;
+    margin-left: 10px;
+    margin-right: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex ;
+    gap: 10px;
+}
+.content    {
+    font-size: 20px;
+    border-radius: 8px;
+    background-color: rgb(207, 241, 250);
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.863);
+}
+.content.left {
+    width: 50%;
+}
+.content.right{
+    width: 50%;
+}
+.title {
+    text-align: center;
+    margin-top: 10px;
+}
+p {
+    text-decoration: none;
+    color: black;   
+    font-weight: bold;
+    font-size: 18px;
+}
