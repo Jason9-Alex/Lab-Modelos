@@ -76,3 +76,31 @@ p {
     font-weight: bold;
     font-size: 18px;
 }
+/* Estilo de la pagina 3 */
+.input-group {
+    margin-bottom: 15px;
+}
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}  
+.input-field {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.btn-generar {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width : 100%;
+}
+.btn-generar:hover {
+    background-color: #45a049;
+}

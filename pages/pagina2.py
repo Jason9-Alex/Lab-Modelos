@@ -5,9 +5,9 @@ import numpy as np
 
 P0 = 900000
 K = 1072764
-r = 0.2311
+r = 0.23311
 t = np.linspace(0, 12, 100)  # Tiempo en años
-P_logistico = (P0 * K * np.exp(r * t)) / ((K - P0) + P0 * np.exp(r * t))
+P_logistico = (P0 * K * np.exp(r * t)) / (K + P0 * (np.exp(r * t) - 1) )
 P_exponencial = P0 * np.exp(r * t)
 #SCATTER PLOT
 trace_exponencial = go.Scatter(
