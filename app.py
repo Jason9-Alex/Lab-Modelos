@@ -1,8 +1,13 @@
 import dash
 from dash import html, dcc
+import dash_bootstrap_components as dbc
 
-app = dash.Dash(__name__, use_pages=True)
-external_scripts = ['https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML']
+
+mathjax_script = ['https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML']
+app = dash.Dash(__name__, use_pages=True, 
+                external_stylesheets=[dbc.themes.FLATLY],
+                external_scripts=[mathjax_script])
+
 app.layout = html.Div([
     html.H1("Tecnicas de modelamiento Matematico", className='app-header'),
     html.Div([

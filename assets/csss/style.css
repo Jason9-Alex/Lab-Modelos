@@ -1,106 +1,172 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+/* --- GENERAL --- */
 body {
-    font-family: 'Outfit';
+    font-family: 'Outfit', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #78f7a2;
+    /* Cambio: Fondo mucho más suave, casi blanco con un tinte menta */
+    background-color: #f0fdf4; 
+    color: #333;
 }
-.app-container {
-    margin: 0 auto;
+
+/* --- HEADER Y NAV --- */
+.app-header {
+    /* Cambio: Gradiente en vez de color plano para un look moderno */
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navigation {
+    background-color: transparent; /* Quitamos el fondo bloque */
+    padding: 15px;
+    text-align: center;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
     padding: 0;
 }
-.app-header {
-    background-color: #7dee9f;
-    color: white;
-    padding: 10px 0;
-    text-align: center;
-    margin:0;
-}
-.navigation {
-    background-color: #a0fca8;
-    padding: 10px;
-    margin-bottom: 10x;
-    margin-top: 10px;
-    text-align: center;
-}
+
 .nav-link {
-     background-color: #a1f790;
-     padding: 2px 8px;
-     border-radius: 15px ;
-}
-.nav-link:hover {
-    background-color: rgb(147, 243, 160);
-}   
-a {
+    background-color: white;
+    color: #059669; /* Verde oscuro para texto */
+    padding: 8px 20px;
+    border-radius: 50px; /* Bordes totalmente redondeados (pill shape) */
+    border: 1px solid #d1fae5;
+    transition: all 0.3s ease; /* Suaviza la animación */
+    font-weight: 600;
     text-decoration: none;
-    color: black;   
-    font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-.nav-links{
-    display: flex ;
-    justify-content: center;
-    gap: 15px;
-    padding: 15px;
+
+.nav-link:hover {
+    background-color: #10b981;
+    color: white;
+    transform: translateY(-2px); /* Pequeño efecto de elevación */
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
 }
+
+/* --- CONTENEDORES --- */
 .page-container {
-    padding: 20px;
-    background-color: #5bec62de;
-    margin-left: 10px;
-    margin-right: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    display: flex ;
-    gap: 10px;
+    padding: 40px; /* Más espacio para respirar */
+    /* Quitamos el background y sombra del contenedor general para limpiar */
+    background-color: transparent; 
+    box-shadow: none;
+    max-width: 1200px; /* Evita que se estire demasiado en pantallas gigantes */
+    margin: 0 auto; /* Centrar en pantalla */
+    display: flex;
+    gap: 30px;
+    align-items: stretch; /* Hace que ambas columnas tengan la misma altura */
+    flex-wrap: wrap; /* Importante para celulares */
 }
-.content    {
-    font-size: 20px;
-    border-radius: 8px;
-    background-color: rgb(207, 241, 250);
-    padding: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.863);
+
+/* --- TARJETAS DE CONTENIDO --- */
+.content {
+    background-color: #ffffff; /* Blanco puro es más limpio que azul pálido */
+    padding: 30px;
+    border-radius: 16px;
+    /* Sombra suave y difusa (estilo moderno) */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    border: 1px solid #eef2f6;
+    font-size: 16px; /* Tamaño base más legible */
+    line-height: 1.6; /* Separación entre líneas */
 }
-.content.left {
-    width: 50%;
+
+.content.left, .content.right {
+    flex: 1; /* Ocupan espacio equitativo pero flexible */
+    min-width: 300px; /* Para que no se aplasten en pantallas chicas */
 }
-.content.right{
-    width: 50%;
-}
+
+/* --- TIPOGRAFÍA --- */
 .title {
     text-align: center;
-    margin-top: 10px;
+    color: #111827;
+    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 700;
+    position: relative;
 }
+
+/* Decoración debajo del título */
+.title::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 4px;
+    background-color: #34d399;
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+/* Estilos globales de texto (Markdown suele usar p) */
 p {
-    text-decoration: none;
-    color: black;   
-    font-weight: bold;
-    font-size: 18px;
-}
-/* Estilo de la pagina 3 */
-.input-group {
+    font-weight: 400; /* Texto normal, NO negrita */
+    color: #4b5563; /* Gris oscuro, menos agresivo que negro puro */
     margin-bottom: 15px;
 }
+
+/* Negritas específicas (para tus etiquetas Nombre:, Apellidos:) */
+strong, b {
+    color: #064e3b; /* Un verde muy oscuro para resaltar */
+    font-weight: 700;
+}
+
+/* --- FORMULARIOS (Página 3) --- */
 .input-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}  
+    margin-bottom: 8px;
+    color: #374151;
+    font-weight: 600;
+}
+
 .input-field {
     width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+    font-family: 'Outfit';
 }
+
+.input-field:focus {
+    border-color: #34d399;
+    outline: none;
+}
+
 .btn-generar {
-    background-color: #4CAF50;
+    background-color: #10b981;
     color: white;
-    padding: 10px 15px;
+    padding: 12px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
     cursor: pointer;
-    width : 100%;
+    width: 100%;
+    transition: background 0.3s;
+    margin-top: 10px;
 }
+
 .btn-generar:hover {
-    background-color: #45a049;
+    background-color: #059669;
+}
+
+/* --- RESPONSIVE (CELULARES) --- */
+@media (max-width: 768px) {
+    .page-container {
+        flex-direction: column; /* Pone uno debajo del otro */
+        padding: 20px;
+    }
+    
+    .content.left, .content.right {
+        width: 100%; /* Ocupan todo el ancho */
+        box-sizing: border-box; /* Evita desbordes */
+    }
 }

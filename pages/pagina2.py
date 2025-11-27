@@ -1,145 +1,125 @@
-import dash    
-from dash import html, dcc
-import plotly.graph_objects as go
+import dash
+from dash import html, dcc, Input, Output, State, callback
+import plotly.graph_objs as go
 import numpy as np
+from scipy.integrate import odeint
 
-P0 = 900000
-K = 1072764
-r = 0.23311
-t = np.linspace(0, 12, 100)  # Tiempo en años
-P_logistico = (P0 * K * np.exp(r * t)) / (K + P0 * (np.exp(r * t) - 1) )
-P_exponencial = P0 * np.exp(r * t)
-#SCATTER PLOT
-trace_exponencial = go.Scatter(
-    x=t,
-    y=P_exponencial,
-    mode='lines',
-    line=dict(color='green', width=3, dash='solid'),
-    name='Crecimiento Exponencial',
-    hovertemplate='t: %{x:.1f}<br>P(t): %{y:.0f}<extra></extra>'
-)
-trace_logistico = go.Scatter(
-    x=t,
-    y=P_logistico,
-    mode='lines',
-    line=dict(color='blue', width=3),
-    name='Crecimiento Logístico',
-    hovertemplate='t: %{x:.1f}<br>P(t): %{y:.0f}<extra></extra>'
-)
-trace_capacidad = go.Scatter(
-    x=t,
-    y=[K] * len(t),
-    mode='lines',
-    line=dict(color='red', width=2, dash='dash'),
-    name=f'Capacidad de Carga (K={K})',
-    hovertemplate='Capacidad de Carga: ' + str(K) + '<extra></extra>'
-)
-trace_inicial = go.Scatter(
-    x=[0],
-    y=[P0],
-    mode='markers+text',
-    marker=dict(color='black', size=10),
-    text=[f'P₀={P0}'],
-    textposition='top right',
-    name='Población Inicial',
-    hovertemplate='Población Inicial: ' + str(P0) + '<extra></extra>'
-)
+dash.register_page(__name__, path='/pagina2', name='Efecto Allee')
 
-# Crear la figura con todas las trazas
-fig = go.Figure(data= [trace_exponencial, trace_logistico, trace_capacidad, trace_inicial])
-fig.update_layout(
-    title=dict(
-        text='<b>Comparación: Crecimiento Exponencial vs Logístico</b>',
-        font=dict(size=20, color='black'),
-        x=0.5,
-        y=0.95,
-    ),
-    xaxis_title="Tiempo (t)",
-    yaxis_title="Población P(t)",
-    hovermode='closest',
-    margin=dict(l=40, r=40, t=80, b=40),
-    paper_bgcolor='lightblue',
-    font=dict(
-        family="Outfit",
-        size=12,
-        color="black"
-    ),
-    legend=dict(
-        yanchor="top",
-        y=0.99,
-        xanchor="left",
-        x=0.01,
-        bgcolor='rgba(255,255,255,0.8)'
-    )
-)
-fig.update_xaxes(
-    showgrid=True, gridwidth=1, gridcolor='LightGray',
-    zeroline=True, zerolinewidth=2, zerolinecolor='Gray',
-    showline=True, linewidth=2, linecolor='Black', mirror=True,
-)
-
-fig.update_yaxes(
-    showgrid=True, gridwidth=1, gridcolor='LightGray',
-    zeroline=True, zerolinewidth=2, zerolinecolor='Gray',
-    showline=True, linewidth=2, linecolor='Black', mirror=True,
-)
-
-dash.register_page(__name__, path='/b', name='Pagina2')
-
-layout = html.Div(children=[ 
-    
-    #contenedor izquierdo
-        html.Div(children=[
-            html.H3("Crecimiento de la Población y Capacidad de Carga", className="title"),
-    
-        dcc.Markdown("""
-Modelo Logístico con Capacidad de Carga  
-Consideremos la ecuación diferencial logística sujeta a una población inicial de $P_0$  
-con capacidad de carga $K$ y tasa de crecimiento $r$.  
-Solución del Problema de Valor Inicial  
-La solución del correspondiente problema de valor inicial viene dada por:
-
-$$
-P(t) = \\frac{P_0 K e^{rt}}{(K - P_0) + P_0 e^{rt}}
-$$
-""", mathjax=True),
-
-dcc.Markdown("""
-Caso de Estudio Específico
-
-Utilizamos los valores:
-- Población inicial: $P_0 = 900000$ ciervos
-- Tasa de crecimiento: $r = 0.2311$
-- Capacidad de carga: $K = 1072764$
-
-Desarrollo Matemático
-
-$$
-P(t) = \\frac{900000 \cdot 1072764 \cdot e^{0.2311t}}{(1072764 - 900000) + 900000 \cdot e^{0.2311t}} = \\frac{900000 \cdot 1072764 \cdot e^{0.2311t}}{172764 + 900000 \cdot e^{0.2311t}}
-$$
-Dividiendo la parte superior e inferior entre $900000$ obtenemos:
-
-$$
-P(t) = \\frac{1072764 \cdot e^{0.2311t}}{0.19196 + e^{0.2311t}}
-$$
-""", mathjax=True),
-    
-    dcc.Markdown("""
-    #### Interpretación
-
-    La gráfica muestra cómo el modelo logístico (azul) se estabiliza en la capacidad de carga, 
-    mientras que el modelo exponencial (verde) crece sin límite, demostrando la importancia 
-    de incluir límites ambientales en los modelos poblacionales.
-    """),
-    
-], className="content left"),
-    
-    #contenedor derecho
-    html.Div(children=[
-        html.H3("Grafica", className="title"),
-        dcc.Graph( 
-            figure=fig,
-            style={"height":"350px",'width':"100%"},
+layout = html.Div([
+    # --- ENCABEZADO ---
+    html.Div([
+        html.H3("Modelo con Efecto Allee", className="title"),
+        dcc.Markdown(r'''
+            
+            Describe una población que necesita un número mínimo de individuos para sobrevivir.
+            
+            $$ \frac{dP}{dt} = rP \left( 1 - \frac{P}{K} \right) \left( \frac{P}{A} - 1 \right) $$
+            
+            * **$K$**: Capacidad de carga.
+            * **$A$**: Umbral de extinción (Punto crítico).
+            ''', mathjax=True, style={'textAlign': 'center', 'color': '#555'}
         )
-    ],className="content right")
-],className="page-container" )
+    ], style={'marginBottom': '20px'}),
+
+    html.Div([
+        # --- CONTROLES ---
+        html.Div([
+            html.H4("Parámetros", className="title", style={'fontSize':'18px'}),
+            
+            html.Label("Población Inicial (P0) - ¡Prueba debajo de A!"),
+            dcc.Slider(min=0, max=100, step=5, value=30, id='allee-p0',
+                       marks={0:'0', 100:'100'}, 
+                       tooltip={"placement": "bottom", "always_visible": True}),
+            
+            html.Br(),
+            html.Label("Umbral de Extinción (A)"),
+            dcc.Slider(min=0, max=50, step=5, value=20, id='allee-a',
+                       marks={0:'0', 20:'20', 50:'50'}, 
+                       tooltip={"placement": "bottom", "always_visible": True}),
+            
+            html.Br(),
+            html.Label("Capacidad de Carga (K)"),
+            dcc.Slider(min=100, max=500, step=50, value=300, id='allee-k',
+                       marks={100:'100', 500:'500'}, 
+                       tooltip={"placement": "bottom", "always_visible": True}),
+            
+            html.Br(),
+            html.Label("Tasa de Crecimiento (r)"),
+            dcc.Slider(min=0.1, max=1.0, step=0.1, value=0.5, id='allee-r',
+                       marks={0.1:'0.1', 1.0:'1.0'}, 
+                       tooltip={"placement": "bottom", "always_visible": True}),
+
+        ], className="content left", style={'width': '30%'}),
+
+        # --- GRÁFICA ---
+        html.Div([
+            html.H3("Dinámica Poblacional", className="title"),
+            dcc.Graph(id='grafica-allee', style={'height': '400px'}),
+            html.Div(id='mensaje-allee', style={'textAlign': 'center', 'marginTop': '10px', 'fontWeight': 'bold'})
+        ], className="content right", style={'width': '70%'})
+
+    ], className="page-container", style={'flexDirection': 'row', 'alignItems': 'flex-start'})
+])
+
+# Ecuación Diferencial del Efecto Allee
+def modelo_allee(P, t, r, K, A):
+    # dP/dt = r * P * (1 - P/K) * (P/A - 1)
+    return r * P * (1 - P/K) * (P/A - 1)
+
+@callback(
+    [Output("grafica-allee", "figure"),
+     Output("mensaje-allee", "children"),
+     Output("mensaje-allee", "style")],
+    [Input("allee-p0", "value"),
+     Input("allee-a", "value"),
+     Input("allee-k", "value"),
+     Input("allee-r", "value")]
+)
+def actualizar_allee(P0, A, K, r):
+    t = np.linspace(0, 50, 200)
+    
+    # Resolver EDO
+    P = odeint(modelo_allee, P0, t, args=(r, K, A))
+    P = P.flatten()
+    
+    # Análisis del resultado
+    final_p = P[-1]
+    
+    # Lógica de colores y mensajes
+    if final_p < 1: # Extinción
+        color_linea = '#ef4444' # Rojo
+        msg = " La población se extinguió (P0 < A). No hubo suficientes individuos para reproducirse."
+        msg_style = {'color': '#ef4444', 'fontSize': '16px'}
+    else: # Supervivencia
+        color_linea = '#10b981' # Verde
+        msg = " La población prosperó y alcanzó su capacidad de carga (P0 > A)."
+        msg_style = {'color': '#10b981', 'fontSize': '16px'}
+
+    # Graficar
+    fig = go.Figure()
+
+    # Curva de Población
+    fig.add_trace(go.Scatter(x=t, y=P, mode='lines', name='Población', line=dict(color=color_linea, width=4)))
+    
+    # Línea de Capacidad (K)
+    fig.add_trace(go.Scatter(x=[0, 50], y=[K, K], mode='lines', name='Capacidad (K)', 
+                             line=dict(color='gray', dash='dash')))
+    
+    # Línea de Umbral (A) - ¡La parte importante!
+    fig.add_trace(go.Scatter(x=[0, 50], y=[A, A], mode='lines', name='Umbral Crítico (A)', 
+                             line=dict(color='orange', dash='dot', width=2)))
+
+    # Área de peligro (Relleno rojo debajo de A)
+    fig.add_hrect(y0=0, y1=A, line_width=0, fillcolor="red", opacity=0.1, annotation_text="Zona de Extinción")
+
+    fig.update_layout(
+        title=dict(text=f'<b>Población Inicial: {P0} vs Umbral: {A}</b>', x=0.5, xanchor='center'),
+        xaxis_title="Tiempo",
+        yaxis_title="Población",
+        template="plotly_white",
+        margin=dict(l=40, r=40, t=60, b=80),
+        legend=dict(orientation="h", y=-0.2, x=0.5, xanchor='center')
+    )
+
+    return fig, msg, msg_style

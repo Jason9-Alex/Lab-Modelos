@@ -1,86 +1,87 @@
 import numpy as np
 import plotly.graph_objs as go
+from scipy.integrate import odeint
 
-def funcion_graficas_ecu_log(n_clicks, P0, r, K, t_max):
-    t = np.linspace(0, t_max, 20)
+# Definimos la ecuación diferencial fuera para que odeint la use
+def modelo_cosecha_edo(P, t, r, K, h):
+    # Ecuación: Crecimiento logístico MENOS la cosecha constante h
+    dPdt = r * P * (1 - P/K) - h
+    return dPdt
 
-    #Ecuacion logistica
-    P = (P0 * K * np.exp(r * t)) / (K + P0 * (np.exp(r * t) - 1) )
+def funcion_grafica_cosecha(n_clicks, P0, r, K, t_max, h):
+    # 1. Generar vector de tiempo (más puntos para que la curva sea suave)
+    t = np.linspace(0, t_max, 200)
 
-    #Crear la figura
-    trace_poblacion = go.Scatter(
+    # 2. Resolver la ecuación diferencial numéricamente
+    # Pasamos los argumentos r, K, h a la función
+    P = odeint(modelo_cosecha_edo, P0, t, args=(r, K, h))
+    P = P.flatten() # Convertimos matriz a vector simple
+
+    # 3. Lógica de Extinción:
+    # Si la población baja de 0, matemáticamente sigue, pero biológicamente es 0.
+    P[P < 0] = 0
+    
+    # Detectar si se extinguió para cambiar el color de la línea
+    se_extingue = np.any(P == 0)
+    color_linea = 'red' if se_extingue else '#10b981' # Rojo si muere, Verde si vive
+
+    # --- CREAR LA FIGURA ---
+    fig = go.Figure()
+
+    # Traza 1: Población
+    fig.add_trace(go.Scatter(
         x=t,
         y=P,
-        mode='lines+markers',
-        name='Poblacion P(t)',
-        line=dict(
-            color='black',
-            width=2,
-            ),
-        marker=dict(
-            size=6,
-            color='red',
-            symbol='circle' 
-        ),
-        hovertemplate='t=%{x:.2f}<br>P(t)=%{y:.2f}<extra></extra>'
+        mode='lines', # Quitamos markers para que se vea más limpio
+        name='Población P(t)',
+        line=dict(color=color_linea, width=4),
+        hovertemplate='Día: %{x:.1f}<br>Población: %{y:.1f}<extra></extra>'
+    ))
 
-    )
-
-    ##Crear grafico de la capacidad de carga
-    trace_capacidad = go.Scatter(
-        x=[0,t_max],
-        y=[K,K],
+    # Traza 2: Capacidad de Carga
+    fig.add_trace(go.Scatter(
+        x=[0, t_max],
+        y=[K, K],
         mode='lines',
-        name='Capacidad de carga (K)',
-        line=dict(
-            color='red',
-            width=2,
-            dash='dot' 
-        ),
-        hovertemplate='K: %{y:.2f}<extra></extra>'
-    )
-    fig = go.Figure(data=[trace_poblacion, trace_capacidad])
-   
+        name='Capacidad (K)',
+        line=dict(color='gray', width=2, dash='dash'),
+        hovertemplate='K: %{y}<extra></extra>'
+    ))
+
+    # Traza 3: Umbral de Extinción (Línea en 0)
+    fig.add_trace(go.Scatter(
+        x=[0, t_max],
+        y=[0, 0],
+        mode='lines',
+        name='Extinción',
+        line=dict(color='black', width=1),
+        showlegend=False
+    ))
+
+    # --- DISEÑO (LAYOUT) MEJORADO ---
     fig.update_layout(
-    title=dict(
-        text='<b> Modelo Logistico de crecimiento poblacional</b>',
-        font= dict(
-            size=20,
-            color='black',
-            ),
-            x=0.5,
+        title=dict(
+            text=f'<b>Modelo con Cosecha (h={h})</b>',
             y=0.95,
+            x=0.5,
+            xanchor='center',
+            font=dict(size=20, color='#064e3b')
         ),
-    xaxis_title="Tiempo (t)",
-    yaxis_title="Población P(t)",
-    hovermode='closest',
-    margin = dict(l=40, r=40, t=70, b=40),
-    paper_bgcolor='lightblue',
-    font = dict(
-        family="Outfit",
-        size=12,
-        color="black"
-    ),
-    legend=dict(
-        orientation="h",
-        yanchor="bottom", 
-        y=1.02,
-    )
-)
-
-    fig.update_xaxes(
-    showgrid=True,gridwidth=1,gridcolor='LightGray',
-    zeroline=True, zerolinewidth=2, zerolinecolor='Gray',
-    showline=True, linewidth=2, linecolor='Black', mirror=True,
-    range = [0, t_max]
+        xaxis_title="Tiempo (t)",
+        yaxis_title="Población P(t)",
+        hovermode='x unified', # Muestra toda la info en una línea vertical
+        template='plotly_white', # Fondo blanco limpio
+        
+        # MÁRGENES: Aquí arreglamos que las letras no se junten
+        margin=dict(l=40, r=40, t=80, b=80), 
+        
+        legend=dict(
+            orientation="h",     # Horizontal
+            yanchor="top",
+            y=-0.2,              # Abajo del gráfico
+            xanchor="center",
+            x=0.5
+        )
     )
 
-    fig.update_yaxes(
-    showgrid=True,gridwidth=1,gridcolor='LightGray',
-    zeroline=True, zerolinewidth=2, zerolinecolor='Gray',
-    showline=True, linewidth=2, linecolor='Black', mirror=True,
-    range = [0, K + K*0.1]
-    )
-
-    
     return fig
