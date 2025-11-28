@@ -4,12 +4,12 @@ import plotly.graph_objs as go
 import numpy as np
 from scipy.integrate import odeint
 
-dash.register_page(__name__, path='/pagina2', name='Efecto Allee')
+dash.register_page(__name__, path='/pagina2', name='Modelo Logistico')
 
 layout = html.Div([
     # --- ENCABEZADO ---
     html.Div([
-        html.H3("Modelo con Efecto Allee", className="title"),
+        html.H3("Modelo Logistico de Crecimiento Poblacional", className="title"),
         dcc.Markdown(r'''
             
             Describe una población que necesita un número mínimo de individuos para sobrevivir.
