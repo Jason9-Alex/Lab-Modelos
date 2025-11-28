@@ -3,7 +3,7 @@ from dash import html, dcc, Input, Output, State, callback
 # Importamos la nueva función desde tu archivo utils
 from utils.funciones import funcion_grafica_cosecha 
 
-dash.register_page(__name__, path='/pagina4', name='Modelo Cosecha')
+dash.register_page(__name__, path='/pagina4', name='Modelo Cosecha' , order=5)
 
 layout = html.Div([
     # --- ENCABEZADO ---

@@ -4,7 +4,7 @@ import numpy as np
 import plotly.graph_objs as go
 from scipy.integrate import odeint 
 
-dash.register_page(__name__, path='/Pagina7', name='Modelo SEIR')
+dash.register_page(__name__, path='/Pagina7', name='Modelo SEIR',order = 7)
 
 # --- Estilos inline para las pestañas (para que combinen con tu nuevo CSS) ---
 tab_style = {

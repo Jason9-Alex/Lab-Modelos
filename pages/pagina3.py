@@ -3,7 +3,7 @@ from dash import html, dcc, Input, Output, State, callback
 import numpy as np
 import plotly.graph_objs as go
 
-dash.register_page(__name__, path='/pagina3', name='Modelo Logístico')
+dash.register_page(__name__, path='/pagina3', name='Modelo Logístico', order =4)
 
 layout = html.Div([
     # --- ENCABEZADO CON ECUACIÓN (MathJax) ---

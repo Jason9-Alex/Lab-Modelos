@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 import requests
 import pandas as pd
 
-dash.register_page(__name__, path='/api_clima', name='Mapa Climático Mundial')
+dash.register_page(__name__, path='/api_clima', name='Mapa Climático Mundial',order = 8)
 
 # --- DICCIONARIO AMPLIADO (Para llenar el mapa) ---
 ciudades = {

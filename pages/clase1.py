@@ -3,7 +3,7 @@ from dash import html, dcc, Input, Output, callback
 import plotly.graph_objs as go
 import numpy as np
 
-dash.register_page(__name__, path='/pagina1', name='Modelo Exponencial')
+dash.register_page(__name__, path='/pagina1', name='Modelo Exponencial',order =1)
 
 layout = html.Div([
     # --- CONTENEDOR IZQUIERDO: TEORÍA Y CONTROLES ---

@@ -3,7 +3,7 @@ from dash import html, dcc, Input, Output, State, callback
 import numpy as np
 import plotly.graph_objs as go
 
-dash.register_page(__name__, path='/campo_vectorial', name='Campo Vectorial')
+dash.register_page(__name__, path='/campo_vectorial', name='Campo Vectorial', order=2)
 
 layout = html.Div([
     html.Div([

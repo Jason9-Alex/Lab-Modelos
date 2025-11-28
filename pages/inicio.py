@@ -1,7 +1,7 @@
 import dash
 from dash import html, dcc
 
-dash.register_page(__name__, path='/', name='Inicio')
+dash.register_page(__name__, path='/', name='Inicio',order = 0)
 
 # Defino el texto aquí arriba para mantener el 'layout' limpio y legible
 info_alumno = '''
