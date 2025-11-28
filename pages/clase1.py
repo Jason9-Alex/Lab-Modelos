@@ -49,7 +49,7 @@ layout = html.Div([
 
     ], className="content left", style={'width': '35%'}),
 
-    # --- CONTENEDOR DERECHO: GRÁFICA Y KPI ---
+
     html.Div([
         # KPI: Tiempo de Duplicación
         html.Div([

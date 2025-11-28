@@ -86,18 +86,15 @@ def actualizar_dashboard(ciudad_seleccionada, n_clicks):
     lons = [v['lon'] for v in ciudades.values()]
     nombres = list(ciudades.keys())
     
-    # Definir colores: Gris para todas, Rojo para la seleccionada
+ 
     colores = ['lightgray'] * len(ciudades)
     tamano = [8] * len(ciudades)
     
-    # Buscar índice de la ciudad seleccionada para pintarla diferente
+
     idx = nombres.index(ciudad_seleccionada)
     colores[idx] = '#ef4444' # Rojo intenso
     tamano[idx] = 15         # Más grande
 
-    # --- 2. CREAR EL MAPA (SCATTERGEO) ---
-    
-    # Usamos proyección 'natural earth' que se ve muy profesional
     fig_map = go.Figure(go.Scattergeo(
         lon = lons,
         lat = lats,
@@ -123,7 +120,7 @@ def actualizar_dashboard(ciudad_seleccionada, n_clicks):
         template="plotly_white"
     )
 
-    # --- 3. CONSULTAR API PARA LA CIUDAD SELECCIONADA ---
+
     lat_sel = ciudades[ciudad_seleccionada]['lat']
     lon_sel = ciudades[ciudad_seleccionada]['lon']
     

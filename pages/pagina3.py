@@ -70,17 +70,16 @@ layout = html.Div([
      Input("slider-t", "value")]
 )
 def actualizar_logistica(P0, r, K, t_max):
-    # Generar datos
+
     t = np.linspace(0, t_max, 200)
-    # Solución exacta de la logística
+
     P = (K * P0 * np.exp(r * t)) / (K + P0 * (np.exp(r * t) - 1))
     
-    # Calcular Derivada (dP/dt) para la segunda gráfica
-    # dP/dt = r * P * (1 - P/K)
-    P_fase = np.linspace(0, K * 1.1, 100) # Un rango de poblaciones posibles
+
+    P_fase = np.linspace(0, K * 1.1, 100) 
     dP_dt = r * P_fase * (1 - P_fase / K)
 
-    # --- GRAFICA 1: TIEMPO ---
+
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=t, y=P, mode='lines', name='Población', line=dict(color='#10b981', width=3)))
     # Línea de capacidad de carga
@@ -95,12 +94,11 @@ def actualizar_logistica(P0, r, K, t_max):
         legend=dict(orientation="h", y=1.5 , x = 0.5, xanchor="center")
     )
 
-    # --- GRAFICA 2: FASE (Parábola) ---
+
     fig2 = go.Figure()
     fig2.add_trace(go.Scatter(x=P_fase, y=dP_dt, mode='lines', name='Velocidad', 
                              fill='tozeroy', line=dict(color='#3b82f6')))
     
-    # Marcamos el punto máximo (K/2)
     max_val = np.max(dP_dt)
     fig2.add_annotation(x=K/2, y=max_val, text="Máx Crecimiento (K/2)", showarrow=True, arrowhead=1)
 
