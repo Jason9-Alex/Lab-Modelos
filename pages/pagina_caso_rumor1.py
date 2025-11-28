@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 import numpy as np
 from scipy.integrate import odeint
 
-dash.register_page(__name__, path='/caso_rumor', name='Caso 2: Rumor Social', order =11)
+dash.register_page(__name__, path='/caso_rumor', name='Caso 2: Rumor Social', order =10)
 
 layout = html.Div([
     # --- ENCABEZADO ---
@@ -114,22 +114,18 @@ def simular_rumor(n_clicks, k, N, b, I0, R0, t_max):
     N, b, k = float(N), float(b), float(k)
     I0, R0, t_max = float(I0), float(R0), float(t_max)
 
-    # 1. Condiciones Iniciales
-    # S0 se calcula restando I0 y R0 (Docentes/Racionales) de la población total
+
     S0 = N - I0 - R0
     y0 = [S0, I0, R0]
     t = np.linspace(0, t_max, 200)
 
-    # 2. Resolver EDO
+
     sol = odeint(sistema_rumor, y0, t, args=(b, k))
     S, I, R = sol.T
 
-    # 3. Cálculos para Q3a y Q3b [cite: 194, 196]
     max_propagadores = np.max(I)
     dia_pico = t[np.argmax(I)]
     
-    # Alcance: Cuántos S iniciales terminaron infectados o recuperados.
-    # O más simple: S_inicial - S_final = Personas que creyeron el rumor
     total_creyeron = S0 - S[-1]
     porcentaje_creyeron = (total_creyeron / S0) * 100
 
@@ -140,11 +136,25 @@ def simular_rumor(n_clicks, k, N, b, I0, R0, t_max):
     fig.add_trace(go.Scatter(x=t, y=R, mode='lines', name='Racionales (R)', line=dict(color='#64748b'))) # Slate
 
     fig.update_layout(
-        title=f"Dinámica del Rumor (k={k})",
+        title={
+            'text': "Dinámica SIR (Estudiantes)",
+            'y': 0.95,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+        },
         template="plotly_white",
-        margin=dict(l=40, r=40, t=40, b=40),
-        legend=dict(orientation="h", y=1.1),
-        hovermode="x unified"
+        hovermode="x unified",
+        # MÁRGENES AJUSTADOS: Menos espacio a los lados, más espacio abajo para la leyenda
+        margin=dict(l=10, r=10, t=50, b=100),
+        # LEYENDA ABAJO HORIZONTAL (Esto libera el ancho)
+        legend=dict(
+            orientation="h", 
+            yanchor="top", 
+            y=-0.2, 
+            xanchor="center", 
+            x=0.5
+        )
     )
 
     # 5. Texto Dinámico

@@ -50,23 +50,29 @@ layout = html.Div([
 
         # --- PANEL DERECHO: GRÁFICA Y RESPUESTAS ---
         html.Div([
-            # TARJETAS DE RESULTADOS (KPIs)
+# TARJETAS DE RESULTADOS (KPIs)
             html.Div([
                 html.Div([
                     html.H5("R0 (Reprod. Básico)"),
                     html.H3(id='res-r0', style={'color': '#d97706'})
-                ], style={'flex': 1, 'textAlign': 'center', 'backgroundColor': '#fffbeb', 'padding': '10px', 'borderRadius': '8px', 'marginRight': '5px'}),
+                ], style={'flex': 1, 'textAlign': 'center', 'backgroundColor': '#fffbeb', 'padding': '15px', 'borderRadius': '12px'}),
                 
                 html.Div([
                     html.H5("Día del Pico"),
                     html.H3(id='res-dia', style={'color': '#ef4444'})
-                ], style={'flex': 1, 'textAlign': 'center', 'backgroundColor': '#fef2f2', 'padding': '10px', 'borderRadius': '8px', 'marginRight': '5px'}),
+                ], style={'flex': 1, 'textAlign': 'center', 'backgroundColor': '#fef2f2', 'padding': '15px', 'borderRadius': '12px'}),
 
                 html.Div([
                     html.H5("Max. Infectados"),
                     html.H3(id='res-max', style={'color': '#b91c1c'})
-                ], style={'flex': 1, 'textAlign': 'center', 'backgroundColor': '#fef2f2', 'padding': '10px', 'borderRadius': '8px'})
-            ], style={'display': 'flex', 'marginBottom': '15px'}),
+                ], style={'flex': 1, 'textAlign': 'center', 'backgroundColor': '#fef2f2', 'padding': '15px', 'borderRadius': '12px'})
+            
+            # --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
+            ], style={
+                'display': 'flex', 
+                'marginBottom': '100',  # <--- Antes era 15px. Súbelo a 40px para bajar la gráfica.
+                'gap': '100'            # <--- Esto separa las tarjetas entre sí horizontalmente.
+            }),
 
             # GRÁFICA
             dcc.Graph(id='grafica-epi', style={'height': '350px'}),
@@ -106,7 +112,6 @@ def simular_epidemia(n_clicks, N, beta, k, I0, t_max):
     N, beta, k = float(N), float(beta), float(k)
     I0, t_max = float(I0), float(t_max)
 
-    # 1. Condiciones Iniciales [cite: 63-66]
     R0_init = 0
     S0 = N - I0 - R0_init
     y0 = [S0, I0, R0_init]
@@ -116,11 +121,6 @@ def simular_epidemia(n_clicks, N, beta, k, I0, t_max):
     sol = odeint(sistema_sir, y0, t, args=(beta, k))
     S, I, R = sol.T
 
-    # 3. Cálculos de Análisis (Respuestas a Q7 y Q8)
-    
-    # R0 = (beta * S0) / k  <-- Fórmula ajustada porque beta no está normalizada por N en tu input
-    # Pero ojo: En tu PDF beta = 1/7138. En la fórmula estándar dS/dt = -beta*S*I/N.
-    # Tu PDF usa dS/dt = -beta*S*I. Por lo tanto, R0 = beta*S0 / k.
     r0_val = (beta * S0) / k 
     
     # Pico
@@ -128,7 +128,6 @@ def simular_epidemia(n_clicks, N, beta, k, I0, t_max):
     max_infectados = I[idx_max]
     dia_pico = t[idx_max]
     
-    # ¿Se infectaron todos? (Q8)
     susceptibles_finales = S[-1]
 
     # 4. Gráfica
@@ -138,11 +137,25 @@ def simular_epidemia(n_clicks, N, beta, k, I0, t_max):
     fig.add_trace(go.Scatter(x=t, y=R, mode='lines', name='Recuperados', line=dict(color='green')))
 
     fig.update_layout(
-        title="Dinámica SIR (Estudiantes)",
+        title={
+            'text': "Dinámica SIR (Estudiantes)",
+            'y': 0.95,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+        },
         template="plotly_white",
-        margin=dict(l=40, r=40, t=40, b=40),
-        legend=dict(orientation="h", y=1.1),
-        hovermode="x unified"
+        hovermode="x unified",
+        # MÁRGENES AJUSTADOS: Menos espacio a los lados, más espacio abajo para la leyenda
+        margin=dict(l=10, r=10, t=50, b=100),
+        # LEYENDA ABAJO HORIZONTAL (Esto libera el ancho)
+        legend=dict(
+            orientation="h", 
+            yanchor="top", 
+            y=-0.2, 
+            xanchor="center", 
+            x=0.5
+        )
     )
 
     # 5. Texto de Conclusión (Basado en Q8 del PDF [cite: 124-128])

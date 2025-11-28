@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 import numpy as np
 from scipy.integrate import odeint
 
-dash.register_page(__name__, path='/caso_politica', name='Caso 3: Política Pública',order =10)
+dash.register_page(__name__, path='/caso_politica', name='Caso 3: Política Pública',order =11)
 
 layout = html.Div([
     # --- ENCABEZADO ---
@@ -104,17 +104,15 @@ def simular_politica(n_clicks, N, b, k, I0, t_max):
     N, b, k = float(N), float(b), float(k)
     I0, t_max = float(I0), float(t_max)
 
-    # 1. Condiciones Iniciales [cite: 445-447]
     R0 = 0
     S0 = N - I0 - R0
     y0 = [S0, I0, R0]
     t = np.linspace(0, t_max, 200)
 
-    # 2. Resolver EDO
+
     sol = odeint(sistema_politica, y0, t, args=(b, k))
     S, I, R = sol.T
 
-    # 3. Cálculos de Gestión
     idx_max = np.argmax(I)
     max_influyentes = I[idx_max]
     dia_pico = t[idx_max]
@@ -127,11 +125,25 @@ def simular_politica(n_clicks, N, b, k, I0, t_max):
     fig.add_trace(go.Scatter(x=t, y=R, mode='lines', name='Rechazadores (R)', line=dict(color='#059669'))) # Esmeralda
 
     fig.update_layout(
-        title=f"Adopción de Política Pública (b={b})",
+        title={
+            'text': "Dinámica SIR (Estudiantes)",
+            'y': 0.95,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+        },
         template="plotly_white",
-        margin=dict(l=40, r=40, t=40, b=40),
-        legend=dict(orientation="h", y=1.1),
-        hovermode="x unified"
+        hovermode="x unified",
+        # MÁRGENES AJUSTADOS: Menos espacio a los lados, más espacio abajo para la leyenda
+        margin=dict(l=10, r=10, t=50, b=100),
+        # LEYENDA ABAJO HORIZONTAL (Esto libera el ancho)
+        legend=dict(
+            orientation="h", 
+            yanchor="top", 
+            y=-0.2, 
+            xanchor="center", 
+            x=0.5
+        )
     )
 
     # 5. Texto de Análisis
